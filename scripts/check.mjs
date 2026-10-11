@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {QUESTIONS,ROUNDS,SOURCES} from '../dist/questions.js';
 import {STUDY_CARDS,STUDY_SOURCES} from '../dist/study-guide.js';
 import {SUMMARY_NOTES,NOTE_CHAPTERS} from '../dist/summary-notes.js';
+import {EASY_NOTES,renderEasyNote} from '../dist/easy-notes.js';
 assert.equal(QUESTIONS.length,340);
 assert.equal(new Set(QUESTIONS.map(q=>q.id)).size,QUESTIONS.length);
 assert.equal(new Set(QUESTIONS.map(q=>q.text)).size,QUESTIONS.length);
@@ -32,7 +33,15 @@ for(const n of SUMMARY_NOTES){
   assert.ok(n.sourceKeys.length>0&&n.sourceKeys.every(k=>STUDY_SOURCES[k]),`${n.id}: 출처`);
 }
 for(const c of STUDY_CARDS)assert.ok(SUMMARY_NOTES.some(n=>n.id===c.id&&n.subject===c.subject),`${c.id}: 관련 요약노트 연결`);
-const assets=['index.html','app.js','core.js','questions.js','study-guide.js','summary-notes.js','rounds-40-43.js','rounds-44-47.js','styles.css','sw.js','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png'];
+assert.deepEqual(Object.keys(EASY_NOTES).sort(),SUMMARY_NOTES.map(n=>n.id).sort());
+for(const n of SUMMARY_NOTES){
+  const d=EASY_NOTES[n.id];
+  for(const k of ['type','caption','say','exam'])assert.ok(typeof d[k]==='string'&&d[k].trim(),`${n.id}: 그림 설명 ${k}`);
+  assert.ok(renderEasyNote(n.id).includes('<figure'),`${n.id}: 도식 렌더링`);
+  assert.ok(d.items.every(row=>row.length>=2&&row.every(t=>typeof t==='string'&&t.trim())),`${n.id}: 도식 항목`);
+  if(d.type==='matrix')assert.ok(d.items.length===4&&d.columns.length===2&&d.rows.length===2,`${n.id}: 두 축 4분면`);
+}
+const assets=['index.html','app.js','core.js','questions.js','study-guide.js','summary-notes.js','easy-notes.js','rounds-40-43.js','rounds-44-47.js','styles.css','sw.js','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png'];
 const worker=fs.readFileSync('dist/sw.js','utf8');
 for(const p of assets){assert.ok(fs.existsSync('dist/'+p));if(p!=='sw.js')assert.ok(worker.includes(`'./${p}'`),`오프라인 캐시 누락: ${p}`);}
-console.log('검증 완료: 40~50회 340문항, 요약노트 77항목, 암기 48항목과 요약 연결, PWA 캐시 파일');
+console.log('검증 완료: 40~50회 340문항, 요약 77항목 전체 그림·쉬운 설명·시험 연결, 암기 48항목, PWA 캐시 파일');
