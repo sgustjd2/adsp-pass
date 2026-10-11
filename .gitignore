@@ -1,5 +1,6 @@
 .openai/
 artifacts/
+tmp/
 node_modules/
 .DS_Store
 *.log

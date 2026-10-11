@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {QUESTIONS,ROUNDS,SOURCES} from '../dist/questions.js';
 import {STUDY_CARDS,STUDY_SOURCES} from '../dist/study-guide.js';
+import {SUMMARY_NOTES,NOTE_CHAPTERS} from '../dist/summary-notes.js';
 assert.equal(QUESTIONS.length,340);
 assert.equal(new Set(QUESTIONS.map(q=>q.id)).size,QUESTIONS.length);
 assert.equal(new Set(QUESTIONS.map(q=>q.text)).size,QUESTIONS.length);
@@ -21,7 +22,17 @@ for(const c of STUDY_CARDS){
   assert.ok(c.sourceKeys.length>0&&c.sourceKeys.every(k=>STUDY_SOURCES[k]&&new URL(STUDY_SOURCES[k].url).protocol==='https:'),`${c.id}: 출처`);
   if(c.compare)assert.ok(c.compare.headers.length>=2&&c.compare.rows.length>0&&c.compare.rows.every(row=>row.length===c.compare.headers.length),`${c.id}: 비교표`);
 }
-const assets=['index.html','app.js','core.js','questions.js','study-guide.js','rounds-40-43.js','rounds-44-47.js','styles.css','sw.js','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png'];
+assert.equal(SUMMARY_NOTES.length,77);
+assert.equal(new Set(SUMMARY_NOTES.map(n=>n.id)).size,SUMMARY_NOTES.length);
+assert.deepEqual([1,2,3].map(s=>SUMMARY_NOTES.filter(n=>n.subject===s).length),[20,23,34]);
+for(const n of SUMMARY_NOTES){
+  assert.ok(n.title&&n.lead&&NOTE_CHAPTERS[n.subject]?.[n.chapter],`${n.id}: 단원·본문`);
+  assert.ok(n.points.length+n.rows.length+n.steps.length+n.formulas.length>0,`${n.id}: 정리 내용`);
+  for(const rows of [n.rows,n.steps])assert.ok(rows.every(row=>row.length===2&&row.every(t=>typeof t==='string'&&t.trim())),`${n.id}: 정리표`);
+  assert.ok(n.sourceKeys.length>0&&n.sourceKeys.every(k=>STUDY_SOURCES[k]),`${n.id}: 출처`);
+}
+for(const c of STUDY_CARDS)assert.ok(SUMMARY_NOTES.some(n=>n.id===c.id&&n.subject===c.subject),`${c.id}: 관련 요약노트 연결`);
+const assets=['index.html','app.js','core.js','questions.js','study-guide.js','summary-notes.js','rounds-40-43.js','rounds-44-47.js','styles.css','sw.js','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png'];
 const worker=fs.readFileSync('dist/sw.js','utf8');
 for(const p of assets){assert.ok(fs.existsSync('dist/'+p));if(p!=='sw.js')assert.ok(worker.includes(`'./${p}'`),`오프라인 캐시 누락: ${p}`);}
-console.log('검증 완료: 40~50회 340문항, 과목별 개념·암기 48항목 및 확인 질문·출처·비교표, PWA 캐시 파일');
+console.log('검증 완료: 40~50회 340문항, 요약노트 77항목, 암기 48항목과 요약 연결, PWA 캐시 파일');

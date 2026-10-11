@@ -29,6 +29,10 @@ export const STUDY_SOURCES = {
   clustering: {title:'scikit-learn · 군집',url:'https://scikit-learn.org/stable/modules/clustering.html',note:'K-means·DBSCAN·계층 군집'},
   pca: {title:'scikit-learn · 주성분 분석',url:'https://scikit-learn.org/stable/modules/decomposition.html',note:'직교 축과 설명분산'},
   mds: {title:'scikit-learn · MDS',url:'https://scikit-learn.org/stable/modules/manifold.html',note:'거리 관계의 저차원 표현'},
+  nosql: {title:'MongoDB · NoSQL 데이터 모델',url:'https://www.mongodb.com/resources/basics/databases/nosql-explained',note:'문서·키/값·컬럼·그래프와 제품별 기능'},
+  transactions: {title:'PostgreSQL · 트랜잭션 격리',url:'https://www.postgresql.org/docs/current/transaction-iso.html',note:'동시 접근과 격리 수준'},
+  naiveBayes: {title:'scikit-learn · 나이브 베이즈',url:'https://scikit-learn.org/stable/modules/naive_bayes.html',note:'클래스 조건부 독립 가정'},
+  rProbability: {title:'R · 확률분포',url:'https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Probability-distributions',note:'분포 함수와 확률'},
 };
 const topic = (subject,category,id,title,summary,points,memory,pitfall,recall,sourceKeys,extra={}) => ({id,subject,category,title,summary,points,memory:{hook:memory[0],text:memory[1]},pitfall,recall:{prompt:recall[0],answer:recall[1]},sourceKeys,...extra});
 export const STUDY_CARDS = [
