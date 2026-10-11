@@ -1,6 +1,8 @@
 // 그림·비유·예시는 직접 작성했다. 비유 다음에 정확한 시험 개념을 연결한다.
+import {EXTRA_EASY_NOTES} from './expanded-notes.js';
 const story=(type,caption,say,exam,items=[],extra={})=>({type,caption,say,exam,items,...extra});
 export const EASY_NOTES={
+  ...EXTRA_EASY_NOTES,
   's1-data-kind':story('compare','같은 아이스크림, 두 종류의 답',
     '“달콤해요”는 느낌이고, “3개 샀어요”는 양이에요. 어떤 내용을 말하는지로 나눠요.',
     '성질·의견은 정성적, 수량·크기는 정량적 데이터입니다. 저장 형식과는 별개의 구분이에요.',

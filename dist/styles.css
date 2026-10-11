@@ -282,6 +282,14 @@ button,a,input,select{touch-action:manipulation}button{transition:background-col
 .note-exam-detail[open]>summary{border-bottom:1px solid var(--line)}
 .note-exam-body{padding-top:14px}
 .note-exam-body>.note-lead{margin-top:0}
+.note-example{margin-top:20px;font-size:var(--study-size);padding-top:16px;border-top:1px solid var(--line)}
+.note-section{content-visibility:auto;contain-intrinsic-block-size:auto 1000px}
+.note-example>h4{margin:0 0 8px;font-size:var(--study-size);color:var(--primary);font-weight:700}
+.note-example>p{margin:0 0 8px;overflow-wrap:anywhere}
+.note-solution>summary{padding:10px 0;min-height:44px;cursor:pointer;color:var(--primary);font-weight:650}
+.note-solution>ol{margin:6px 0 0;padding-left:24px;line-height:1.85}
+.note-solution li{padding-left:3px;overflow-wrap:anywhere}
+.note-solution li+li{margin-top:10px}
 .easy-slots{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
 .easy-slots>span,.easy-slots>div{display:flex;align-items:center;justify-content:center;flex:1;min-width:32px;min-height:42px;padding:6px 8px;background:white;border:1px solid #bdccef;border-radius:4px;font-variant-numeric:tabular-nums}
 .easy-slots>div{flex-direction:column}
@@ -336,6 +344,9 @@ button,a,input,select{touch-action:manipulation}button{transition:background-col
   .easy-exam{font-size:10pt}
   .easy-svg{max-width:320px}
   .note-exam-detail{font-size:10pt}
+  .note-example{font-size:10pt}
+  .note-section{content-visibility:visible;contain-intrinsic-block-size:none}
+  .note-solution[open]>summary{display:none}
   .note-exam-detail:not([open]){display:none}
   .note-exam-detail[open]>summary{display:none}
 }

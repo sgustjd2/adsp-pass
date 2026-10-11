@@ -1,4 +1,5 @@
 import {STUDY_CARDS} from './study-guide.js';
+import {EXPANDED_NOTES,ORIGINAL_EXAMPLES} from './expanded-notes.js';
 
 // 문장은 자체 작성했다. 참고 PDF는 단원·정의·표의 읽기 형식만 참고했다.
 export const NOTE_CHAPTERS = {
@@ -11,12 +12,12 @@ const base=(id,chapter,extra={})=>{
   const c=cardById.get(id);
   return {id,subject:c.subject,chapter,title:c.title,lead:c.summary,points:c.points,
     rows:c.compare?.rows??[],formulas:c.formulas??[],steps:[],tip:c.memory.hook,
-    caution:c.pitfall,sourceKeys:c.sourceKeys,...extra};
+    caution:c.pitfall,sourceKeys:c.sourceKeys,example:{question:c.recall.prompt,solution:[c.recall.answer]},...extra};
 };
 const note=(subject,chapter,id,title,lead,rows,extra={})=>({id,subject,chapter,title,lead,
   rows,points:[],steps:[],formulas:[],tip:'',caution:'',sourceKeys:['dataq'],...extra});
 
-export const SUMMARY_NOTES = [
+const CORE_NOTES = [
   note(1,0,'s1-data-kind','데이터의 의미 · 정성적 / 정량적',
     '관찰하거나 측정한 사실은 비교·해석을 거쳐 판단의 근거가 됩니다.',[
       ['정성적 데이터','성질·의견·상태를 표현. 고객의 서술형 의견, 관찰 기록 등이 예시.'],
@@ -420,3 +421,8 @@ export const SUMMARY_NOTES = [
   base('s3-pca-mds',3),
   base('s3-rules',3),
 ];
+
+export const SUMMARY_NOTES=[
+  ...CORE_NOTES.map(n=>({...n,example:n.example??ORIGINAL_EXAMPLES[n.id]})),
+  ...EXPANDED_NOTES.map(({easy,...n})=>n),
+].sort((a,b)=>a.subject-b.subject||a.chapter-b.chapter);

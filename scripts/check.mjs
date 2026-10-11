@@ -23,14 +23,15 @@ for(const c of STUDY_CARDS){
   assert.ok(c.sourceKeys.length>0&&c.sourceKeys.every(k=>STUDY_SOURCES[k]&&new URL(STUDY_SOURCES[k].url).protocol==='https:'),`${c.id}: 출처`);
   if(c.compare)assert.ok(c.compare.headers.length>=2&&c.compare.rows.length>0&&c.compare.rows.every(row=>row.length===c.compare.headers.length),`${c.id}: 비교표`);
 }
-assert.equal(SUMMARY_NOTES.length,77);
+assert.equal(SUMMARY_NOTES.length,160);
 assert.equal(new Set(SUMMARY_NOTES.map(n=>n.id)).size,SUMMARY_NOTES.length);
-assert.deepEqual([1,2,3].map(s=>SUMMARY_NOTES.filter(n=>n.subject===s).length),[20,23,34]);
+assert.deepEqual([1,2,3].map(s=>SUMMARY_NOTES.filter(n=>n.subject===s).length),[40,40,80]);
 for(const n of SUMMARY_NOTES){
   assert.ok(n.title&&n.lead&&NOTE_CHAPTERS[n.subject]?.[n.chapter],`${n.id}: 단원·본문`);
   assert.ok(n.points.length+n.rows.length+n.steps.length+n.formulas.length>0,`${n.id}: 정리 내용`);
   for(const rows of [n.rows,n.steps])assert.ok(rows.every(row=>row.length===2&&row.every(t=>typeof t==='string'&&t.trim())),`${n.id}: 정리표`);
   assert.ok(n.sourceKeys.length>0&&n.sourceKeys.every(k=>STUDY_SOURCES[k]),`${n.id}: 출처`);
+  assert.ok(n.example?.question?.trim()&&n.example.solution.length>0&&n.example.solution.every(t=>typeof t==='string'&&t.trim()),`${n.id}: 예제·풀이`);
 }
 for(const c of STUDY_CARDS)assert.ok(SUMMARY_NOTES.some(n=>n.id===c.id&&n.subject===c.subject),`${c.id}: 관련 요약노트 연결`);
 assert.deepEqual(Object.keys(EASY_NOTES).sort(),SUMMARY_NOTES.map(n=>n.id).sort());
@@ -41,7 +42,7 @@ for(const n of SUMMARY_NOTES){
   assert.ok(d.items.every(row=>row.length>=2&&row.every(t=>typeof t==='string'&&t.trim())),`${n.id}: 도식 항목`);
   if(d.type==='matrix')assert.ok(d.items.length===4&&d.columns.length===2&&d.rows.length===2,`${n.id}: 두 축 4분면`);
 }
-const assets=['index.html','app.js','core.js','questions.js','study-guide.js','summary-notes.js','easy-notes.js','rounds-40-43.js','rounds-44-47.js','styles.css','sw.js','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png'];
+const assets=['index.html','app.js','core.js','questions.js','study-guide.js','summary-notes.js','easy-notes.js','expanded-notes.js','rounds-40-43.js','rounds-44-47.js','styles.css','sw.js','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png'];
 const worker=fs.readFileSync('dist/sw.js','utf8');
 for(const p of assets){assert.ok(fs.existsSync('dist/'+p));if(p!=='sw.js')assert.ok(worker.includes(`'./${p}'`),`오프라인 캐시 누락: ${p}`);}
-console.log('검증 완료: 40~50회 340문항, 요약 77항목 전체 그림·쉬운 설명·시험 연결, 암기 48항목, PWA 캐시 파일');
+console.log('검증 완료: 40~50회 340문항, 요약 160항목 전체 그림·쉬운 설명·예제 풀이, 암기 48항목, PWA 캐시 파일');

@@ -73,7 +73,7 @@ const studyOpen=new Set([STUDY_CARDS[0].id]);
 function studyFiltered(){
   const needle=studySearch.trim().toLocaleLowerCase('ko-KR');
   const source=studyMode==='memory'?STUDY_CARDS:SUMMARY_NOTES;
-  return source.filter(c=>c.subject===studySubject&&(studyCategory==='all'||studyUnit(c)===studyCategory)&&(!needle||JSON.stringify([c.title,c.lead,c.summary,c.points,c.rows,c.steps,c.memory,c.tip,c.caution,c.pitfall,c.recall,c.formulas,c.compare,studyMode==='concept'?EASY_NOTES[c.id]:null]).toLocaleLowerCase('ko-KR').includes(needle)));
+  return source.filter(c=>c.subject===studySubject&&(studyCategory==='all'||studyUnit(c)===studyCategory)&&(!needle||JSON.stringify([c.title,c.lead,c.summary,c.points,c.rows,c.steps,c.memory,c.tip,c.caution,c.pitfall,c.recall,c.formulas,c.compare,c.example,studyMode==='concept'?EASY_NOTES[c.id]:null]).toLocaleLowerCase('ko-KR').includes(needle)));
 }
 function studyUnit(c){return studyMode==='memory'?c.category:NOTE_CHAPTERS[c.subject][c.chapter];}
 function noteSection(n){
@@ -84,11 +84,11 @@ function noteSection(n){
     ${n.formulas.length?`<div class="note-formulas" aria-label="핵심 공식">${n.formulas.map(f=>`<p>${esc(f)}</p>`).join('')}</div>`:''}
     ${n.tip?`<p class="note-tip"><strong>암기</strong> ${esc(n.tip)}</p>`:''}
     ${n.caution?`<p class="note-caution"><strong>주의</strong> ${esc(n.caution)}</p>`:''}
-  </div></details></section>`;
+  </div></details><section class="note-example" aria-labelledby="example-${n.id}"><h4 id="example-${n.id}">예제로 확인</h4><p>${esc(n.example.question)}</p><details class="note-solution" ${studyReading==='exam'?'open':''}><summary>풀이 보기</summary><ol>${n.example.solution.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></details></section></section>`;
 }
 function summaryDocument(notes){
   const chapters=NOTE_CHAPTERS[studySubject];
-  return `<article class="summary-document" aria-label="${studySubject}과목 요약노트"><header class="note-cover"><h2 tabindex="-1">${studySubject}과목 · ${SUBJECTS[studySubject-1]}</h2><p>${studyReading==='easy'?'그림 · 쉬운 예시 · 시험 연결':'정의 · 비교 · 절차 · 공식'}</p></header>${chapters.map((title,i)=>{
+  return `<article class="summary-document" aria-label="${studySubject}과목 요약노트"><header class="note-cover"><h2 tabindex="-1">${studySubject}과목 · ${SUBJECTS[studySubject-1]}</h2><p>${studyReading==='easy'?'그림 · 쉬운 설명 · 예제와 풀이':'정의 · 비교 · 공식 · 예제와 풀이'}</p></header>${chapters.map((title,i)=>{
     const items=notes.filter(n=>n.chapter===i);if(!items.length)return '';
     return `<section class="note-chapter"><h2>${esc(title)}</h2>${items.map(noteSection).join('')}</section>`;
   }).join('')}<details class="note-references"><summary>이 과목의 참고 자료</summary><ul>${[...new Set(notes.flatMap(n=>n.sourceKeys))].map(key=>`<li><a href="${STUDY_SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(STUDY_SOURCES[key].title)} ↗</a></li>`).join('')}</ul></details></article>`;
@@ -113,7 +113,7 @@ function studyCountLabel(){return `${studyFiltered().length}개 항목${studyCat
 function renderStudyList(){const list=$('#study-list');if(!list)return;list.innerHTML=studyItems();$('#study-count').textContent=studyCountLabel();const expand=$('#study-expand');if(expand){expand.textContent=studyAllOpen()?'모두 접기':'모두 펼치기';expand.disabled=studyFiltered().length===0;}$('#study-clear-filter').hidden=studyCategory==='all'&&!studySearch.trim();$('#study-print')?.toggleAttribute('disabled',studyFiltered().length===0);}
 function conceptPage(){
   const memory=studyMode==='memory',source=memory?STUDY_CARDS:SUMMARY_NOTES,categories=memory?[...new Set(source.filter(c=>c.subject===studySubject).map(c=>c.category))]:NOTE_CHAPTERS[studySubject];
-  return `<div class="study-room ${memory?'memory-room':'notes-room'}">${pageHead('핵심 요약노트','그림과 쉬운 예시로 이해한 뒤, 시험 개념과 연결해요.')}
+  return `<div class="study-room ${memory?'memory-room':'notes-room'}">${pageHead('핵심 요약노트','그림으로 이해하고, 세부 개념과 예제 풀이로 꼼꼼히 복습해요.')}
     <div class="study-subjects" role="group" aria-label="공부할 과목">${SUBJECTS.map((title,i)=>`<button data-action="study-subject" data-subject="${i+1}" aria-label="${i+1}과목 ${title}" aria-pressed="${studySubject===i+1}"><strong>${i+1}과목</strong><span>${source.filter(c=>c.subject===i+1).length}개 항목</span></button>`).join('')}</div>
     <div class="study-modes" role="group" aria-label="정리 방식"><button data-action="study-mode" data-mode="concept" aria-pressed="${!memory}">요약노트</button><button data-action="study-mode" data-mode="memory" aria-pressed="${memory}">암기 비법</button></div>
     ${!memory?`<div class="note-reading" role="group" aria-label="요약노트 읽기 방식"><button data-action="study-reading" data-reading="easy" aria-pressed="${studyReading==='easy'}">그림으로 이해</button><button data-action="study-reading" data-reading="exam" aria-pressed="${studyReading==='exam'}">시험 요약</button></div>`:''}

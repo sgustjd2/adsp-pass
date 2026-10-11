@@ -1,6 +1,6 @@
-const CACHE='adsp-pass-v1.4.0';
+const CACHE='adsp-pass-v1.5.0';
 const ROOT=self.registration.scope;
-const ASSETS=['./','./index.html','./styles.css','./app.js','./core.js','./questions.js','./study-guide.js','./summary-notes.js','./easy-notes.js','./rounds-40-43.js','./rounds-44-47.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
+const ASSETS=['./','./index.html','./styles.css','./app.js','./core.js','./questions.js','./study-guide.js','./summary-notes.js','./easy-notes.js','./expanded-notes.js','./rounds-40-43.js','./rounds-44-47.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS.map(p=>new URL(p,ROOT).href))));
 });
