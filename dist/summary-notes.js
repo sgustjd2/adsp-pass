@@ -1,5 +1,7 @@
 import {STUDY_CARDS} from './study-guide.js';
 import {EXPANDED_NOTES,ORIGINAL_EXAMPLES} from './expanded-notes.js';
+import {DETAILED_NOTES} from './detailed-notes.js';
+import {NOTE_DEPTH} from './note-depth.js';
 
 // 문장은 자체 작성했다. 참고 PDF는 단원·정의·표의 읽기 형식만 참고했다.
 export const NOTE_CHAPTERS = {
@@ -425,4 +427,5 @@ const CORE_NOTES = [
 export const SUMMARY_NOTES=[
   ...CORE_NOTES.map(n=>({...n,example:n.example??ORIGINAL_EXAMPLES[n.id]})),
   ...EXPANDED_NOTES.map(({easy,...n})=>n),
-].sort((a,b)=>a.subject-b.subject||a.chapter-b.chapter);
+  ...DETAILED_NOTES.map(({easy,...n})=>n),
+].map(n=>({...n,deep:n.deep??NOTE_DEPTH[n.id]??[]})).sort((a,b)=>a.subject-b.subject||a.chapter-b.chapter);

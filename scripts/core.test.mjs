@@ -1,7 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {QUESTIONS} from '../dist/questions.js';
+import {QUESTIONS,ROUNDS} from '../dist/questions.js';
 import {initialState,createSession,examQuestions,remainingSeconds,recordAttempt,checkSessionAnswer,isDeferredMode,finishSession,validateState,daysLeft} from '../dist/core.js';
+test('모든 회차는 두 모드에서 50번까지 저장·재개되고 전체 채점에 포함된다',()=>{
+  for(const round of ROUNDS)for(const mode of ['learn','batch']){
+    const qs=QUESTIONS.filter(q=>q.round===round.number).sort((a,b)=>a.subject-b.subject);
+    const state=initialState();state.active=createSession(qs,mode,`${round.number}회 50문제`);
+    state.active.index=49;
+    for(const q of qs){state.active.answers[q.id]=q.answer;}
+    const restored=validateState(JSON.parse(JSON.stringify(state)));
+    assert.equal(restored.active.ids.length,50);
+    assert.equal(restored.active.index,49);
+    assert.deepEqual(restored.active.ids,state.active.ids);
+    const result=finishSession(restored);
+    assert.equal(result.total,50);assert.equal(result.correct,50);assert.equal(result.score,100);
+    assert.deepEqual(result.subjects.map(s=>s.total),[10,10,30]);
+    assert.equal(Object.keys(restored.attempts).length,50);
+    assert.equal(restored.active,null);
+  }
+});
 test('모의고사는 중복 없이 10·10·30문제이며 90분 뒤 만료된다',()=>{
   const qs=examQuestions(),s=createSession(qs,'exam','테스트',10000);
   assert.equal(qs.length,50);assert.equal(new Set(qs.map(q=>q.id)).size,50);

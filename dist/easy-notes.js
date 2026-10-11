@@ -1,8 +1,11 @@
 // 그림·비유·예시는 직접 작성했다. 비유 다음에 정확한 시험 개념을 연결한다.
 import {EXTRA_EASY_NOTES} from './expanded-notes.js';
+import {DETAILED_EASY_NOTES} from './detailed-notes.js';
+import {NOTE_ILLUSTRATIONS} from './note-illustrations.js';
 const story=(type,caption,say,exam,items=[],extra={})=>({type,caption,say,exam,items,...extra});
 export const EASY_NOTES={
   ...EXTRA_EASY_NOTES,
+  ...DETAILED_EASY_NOTES,
   's1-data-kind':story('compare','같은 아이스크림, 두 종류의 답',
     '“달콤해요”는 느낌이고, “3개 샀어요”는 양이에요. 어떤 내용을 말하는지로 나눠요.',
     '성질·의견은 정성적, 수량·크기는 정량적 데이터입니다. 저장 형식과는 별개의 구분이에요.',
@@ -388,5 +391,7 @@ function diagram(d){
 }
 export function renderEasyNote(id){
   const d=EASY_NOTES[id];if(!d)return '';
-  return `<div class="easy-note"><figure class="easy-figure"><figcaption>${esc(d.caption)}</figcaption>${diagram(d)}</figure><p class="easy-say">${esc(d.say)}</p><p class="easy-exam"><strong>시험에서는</strong> ${esc(d.exam)}</p></div>`;
+  const illustration=NOTE_ILLUSTRATIONS[id];
+  const visual=illustration?`<figure class="easy-figure illustrated-note"><figcaption>${esc(illustration.caption)}</figcaption><a class="note-image-link" href="${illustration.src}" target="_blank" rel="noopener noreferrer" aria-label="${esc(illustration.caption)} 그림 크게 보기"><img class="note-illustration" src="${illustration.src}" width="${illustration.width}" height="${illustration.height}" alt="${esc(illustration.alt)}" loading="lazy" decoding="async"></a><ol class="illustration-steps">${illustration.steps.map(([title,text])=>`<li><strong>${esc(title)}</strong><p>${esc(text)}</p></li>`).join('')}</ol><p class="illustration-footnote">${esc(illustration.footnote)}</p></figure>`:`<figure class="easy-figure"><figcaption>${esc(d.caption)}</figcaption>${diagram(d)}</figure>`;
+  return `<div class="easy-note">${visual}<p class="easy-say">${esc(d.say)}</p><p class="easy-exam"><strong>시험에서는</strong> ${esc(d.exam)}</p></div>`;
 }

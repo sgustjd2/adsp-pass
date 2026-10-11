@@ -1,9 +1,11 @@
 // 독립적으로 작성한 문항입니다. 출처는 문장·선택지가 아닌 출제 주제 확인에 사용했습니다.
 import {ROUND_SOURCES_40_43,ROUND_QUESTIONS_40_43,ROUND_META_40_43} from './rounds-40-43.js';
 import {ROUND_SOURCES_44_47,ROUND_QUESTIONS_44_47,ROUND_META_44_47} from './rounds-44-47.js';
+import {ROUND_SUPPLEMENTS} from './round-supplements.js';
 export const SOURCES = {
   ...ROUND_SOURCES_40_43,
   ...ROUND_SOURCES_44_47,
+  syllabus: { title: 'DataQ · ADsP 공식 출제 범위', url: 'https://www.dataq.or.kr/www/sub/a_06.do', note: '공식 범위에 맞춘 독립 보충 문제 · 해당 회차에서 실제 출제되었다는 확인 자료는 아님' },
   r50: { title: '50회 응시자의 출제 주제 후기', url: 'https://wankong0616.tistory.com/6', note: '2026.08.08 당일 응시 후기 · 기억에 따른 출제 주제' },
   r49: { title: '49회 공개 복원 학습 정리', url: 'https://tgog-praise.tistory.com/69', note: '2026.08.03 정리 · 공식 원문 및 정답 검증 자료는 아님' },
   r48a: { title: '48회 데이터에듀 공개 분석 · 1과목', url: 'https://www.dataedupt.kr/sub/community/bbs1view1.php?cate=review&idx=510', note: '응시 기억에 따른 복원 분석' },
@@ -127,7 +129,12 @@ const ADDED_QUESTIONS = [...ROUND_QUESTIONS_40_43,...ROUND_QUESTIONS_44_47].map(
   const shift=(i*3+q.round)%4;
   return {...q,options:q.options.map((_,j)=>q.options[(j+shift)%4]),answer:(q.answer-shift+4)%4,kind:'공개 복원 분석 기반 재구성',given:q.given??''};
 });
-export const QUESTIONS = [...RECENT_QUESTIONS,...ADDED_QUESTIONS];
+// 자료의 문항 순서와 무관하게 학습 내용을 기준으로 과목을 분류한다.
+const SUBJECT_CORRECTIONS = {'r50-007':3,'r50-011':2,'r50-012':1};
+export const QUESTIONS = [
+  ...[...RECENT_QUESTIONS,...ADDED_QUESTIONS].map(q=>({...q,subject:SUBJECT_CORRECTIONS[q.id]??q.subject})),
+  ...ROUND_SUPPLEMENTS,
+];
 export const SUBJECTS = ['데이터 이해','데이터 분석 기획','데이터 분석'];
 export const ROUNDS = [
   { number:50, date:'2026.08.08', description:'가장 최근 출제 후기', badge:'LATEST' },

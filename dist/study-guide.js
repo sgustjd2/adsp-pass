@@ -63,6 +63,17 @@ export const STUDY_SOURCES = {
   dataLeakage: {title:'scikit-learn · 데이터 누수',url:'https://scikit-learn.org/stable/common_pitfalls.html',note:'분할·전처리·파이프라인'},
   threshold: {title:'scikit-learn · 분류 임계값',url:'https://scikit-learn.org/stable/modules/classification_threshold.html',note:'확률 점수·업무 비용·기준 선택'},
   pairwise: {title:'scikit-learn · 거리·유사도',url:'https://scikit-learn.org/stable/modules/metrics.html',note:'유클리드·맨해튼·코사인'},
+  sqlJoin: {title:'PostgreSQL · 조인',url:'https://www.postgresql.org/docs/current/tutorial-join.html',note:'내부·외부 조인과 결과 행'},
+  rOrder: {title:'R · 정렬 순서',url:'https://stat.ethz.ch/R-manual/R-devel/library/base/html/order.html',note:'sort·order·rank의 비교'},
+  rAggregate: {title:'R · 그룹별 집계',url:'https://stat.ethz.ch/R-manual/R-devel/library/stats/html/aggregate.html',note:'그룹·요약 함수·결측 처리'},
+  rWilcox: {title:'R · Wilcoxon 검정',url:'https://stat.ethz.ch/R-manual/R-devel/library/stats/html/wilcox.test.html',note:'순위합·부호순위의 조건'},
+  rKruskal: {title:'R · Kruskal–Wallis 검정',url:'https://stat.ethz.ch/R-manual/R-devel/library/stats/html/kruskal.test.html',note:'여러 집단의 순위 검정'},
+  rStep: {title:'R · 단계적 모형 선택',url:'https://stat.ethz.ch/R-manual/R-devel/library/stats/html/step.html',note:'AIC·선택 방향·같은 자료'},
+  nistMultiple: {title:'NIST · 다중 비교',url:'https://www.itl.nist.gov/div898/handbook/prc/section4/prc47.htm',note:'전체 검정과 쌍별 비교'},
+  nistAcf: {title:'NIST · AR·MA 차수 식별',url:'https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc446.htm',note:'정상성·ACF·PACF'},
+  nistSmooth: {title:'NIST · 지수평활',url:'https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc431.htm',note:'가중치·초기값·예측'},
+  featureSelection: {title:'scikit-learn · 변수 선택',url:'https://scikit-learn.org/stable/modules/feature_selection.html',note:'필터·래퍼·모형 기반 선택'},
+  silhouette: {title:'scikit-learn · 실루엣 계수',url:'https://scikit-learn.org/stable/modules/generated/sklearn.metrics.silhouette_score.html',note:'응집·분리와 계산 조건'},
 };
 const topic = (subject,category,id,title,summary,points,memory,pitfall,recall,sourceKeys,extra={}) => ({id,subject,category,title,summary,points,memory:{hook:memory[0],text:memory[1]},pitfall,recall:{prompt:recall[0],answer:recall[1]},sourceKeys,...extra});
 export const STUDY_CARDS = [
