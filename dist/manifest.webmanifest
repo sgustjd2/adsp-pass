@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "ADsP 포켓 · 나의 작은 합격 습관",
+  "short_name": "ADsP 포켓",
+  "description": "최근 ADsP 출제 주제 재구성 문제, 오답 복습과 실전 모의고사",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fc",
+  "theme_color": "#304f9d",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

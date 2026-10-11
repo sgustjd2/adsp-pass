@@ -1,0 +1,11 @@
+{
+  "name": "adsp-pocket",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test scripts/core.test.mjs",
+    "check": "node scripts/check.mjs && node scripts/contrast.mjs"
+  }
+}
