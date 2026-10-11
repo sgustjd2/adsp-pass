@@ -1,7 +1,8 @@
 import { QUESTIONS } from './questions.js';
 export const BY_ID = new Map(QUESTIONS.map(q => [q.id,q]));
 export const STORAGE_KEY = 'adsp-pocket:v1';
-export const initialState = () => ({version:1, attempts:{}, bookmarks:[], history:[], active:null, examDate:'2026-10-31', fontSize:'normal'});
+export const initialState = () => ({version:1, attempts:{}, bookmarks:[], history:[], active:null, examDate:'2026-10-31', fontSize:'normal', preferredMode:'learn'});
+export const isDeferredMode = mode => mode==='batch'||mode==='exam';
 export function shuffled(items, random=Math.random) {
   const result=[...items];
   for(let i=result.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
@@ -21,6 +22,15 @@ export function recordAttempt(state,id,answer,now=Date.now()) {
   const old=state.attempts[id]??{seen:0,correct:0,wrong:0};
   state.attempts[id]={seen:old.seen+1,correct:old.correct+(correct?1:0),wrong:old.wrong+(correct?0:1),lastCorrect:correct,lastAt:now};
 }
+export function checkSessionAnswer(state,now=Date.now()) {
+  const session=state.active;
+  if(!session||isDeferredMode(session.mode))return false;
+  const id=session.ids[session.index];
+  if(session.answers[id]===undefined||session.checked[id])return false;
+  session.checked[id]=true;
+  recordAttempt(state,id,session.answers[id],now);
+  return true;
+}
 export function summarize(session) {
   const subjects=[1,2,3].map(subject=>{
     const ids=session.ids.filter(id=>BY_ID.get(id).subject===subject);
@@ -35,7 +45,7 @@ export function finishSession(state,now=Date.now()) {
   const session=state.active;
   if(!session)return null;
   for(const id of session.ids){
-    if(session.mode==='exam'||!session.checked[id])recordAttempt(state,id,session.answers[id],now);
+    if(isDeferredMode(session.mode)||!session.checked[id])recordAttempt(state,id,session.answers[id],now);
   }
   const result={...session,endedAt:now,...summarize(session)};
   state.history.unshift(result);
@@ -47,7 +57,7 @@ function isObject(value){return value!==null&&typeof value==='object'&&!Array.is
 function validNumber(value){return Number.isFinite(value)&&value>=0;}
 function validAnswers(answers,ids){return isObject(answers)&&Object.entries(answers).every(([id,n])=>ids.includes(id)&&Number.isInteger(n)&&n>=0&&n<4);}
 function validSession(s){
-  return isObject(s)&&Array.isArray(s.ids)&&s.ids.length>0&&s.ids.length<=QUESTIONS.length&&new Set(s.ids).size===s.ids.length&&s.ids.every(id=>BY_ID.has(id))&&['learn','review','exam'].includes(s.mode)&&typeof s.title==='string'&&s.title.length<=100&&Number.isInteger(s.index)&&s.index>=0&&s.index<s.ids.length&&validAnswers(s.answers,s.ids)&&isObject(s.checked)&&Object.entries(s.checked).every(([id,b])=>s.ids.includes(id)&&b===true&&Number.isInteger(s.answers[id]))&&validNumber(s.startedAt)&&(s.mode==='exam'?Number.isFinite(s.deadline)&&s.deadline===s.startedAt+5400000:s.deadline===null);
+  return isObject(s)&&Array.isArray(s.ids)&&s.ids.length>0&&s.ids.length<=QUESTIONS.length&&new Set(s.ids).size===s.ids.length&&s.ids.every(id=>BY_ID.has(id))&&['learn','review','batch','exam'].includes(s.mode)&&typeof s.title==='string'&&s.title.length<=100&&Number.isInteger(s.index)&&s.index>=0&&s.index<s.ids.length&&validAnswers(s.answers,s.ids)&&isObject(s.checked)&&Object.entries(s.checked).every(([id,b])=>s.ids.includes(id)&&b===true&&Number.isInteger(s.answers[id]))&&(!isDeferredMode(s.mode)||Object.keys(s.checked).length===0)&&validNumber(s.startedAt)&&(s.mode==='exam'?Number.isFinite(s.deadline)&&s.deadline===s.startedAt+5400000:s.deadline===null);
 }
 export function validateState(value) {
   if(!isObject(value)||value.version!==1)throw new Error('지원하지 않는 백업 형식입니다.');
@@ -57,7 +67,9 @@ export function validateState(value) {
   if(value.active!==null&&!validSession(value.active))throw new Error('진행 중인 풀이가 올바르지 않습니다.');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(value.examDate)||!Number.isFinite(Date.parse(value.examDate))||new Date(value.examDate).toISOString().slice(0,10)!==value.examDate)throw new Error('시험 날짜가 올바르지 않습니다.');
   if(!['normal','large'].includes(value.fontSize))throw new Error('글자 크기 설정이 올바르지 않습니다.');
-  return {...initialState(), attempts:value.attempts,bookmarks:[...new Set(value.bookmarks)],history:value.history.map(r=>({...r,...summarize(r)})),active:value.active,examDate:value.examDate,fontSize:value.fontSize};
+  const preferredMode=value.preferredMode??'learn';
+  if(!['learn','batch'].includes(preferredMode))throw new Error('풀이 방식 설정이 올바르지 않습니다.');
+  return {...initialState(), attempts:value.attempts,bookmarks:[...new Set(value.bookmarks)],history:value.history.map(r=>({...r,...summarize(r)})),active:value.active,examDate:value.examDate,fontSize:value.fontSize,preferredMode};
 }
 export function stats(state) {
   const attempts=Object.values(state.attempts);

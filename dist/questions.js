@@ -1,5 +1,9 @@
 // 독립적으로 작성한 문항입니다. 출처는 문장·선택지가 아닌 출제 주제 확인에 사용했습니다.
+import {ROUND_SOURCES_40_43,ROUND_QUESTIONS_40_43,ROUND_META_40_43} from './rounds-40-43.js';
+import {ROUND_SOURCES_44_47,ROUND_QUESTIONS_44_47,ROUND_META_44_47} from './rounds-44-47.js';
 export const SOURCES = {
+  ...ROUND_SOURCES_40_43,
+  ...ROUND_SOURCES_44_47,
   r50: { title: '50회 응시자의 출제 주제 후기', url: 'https://wankong0616.tistory.com/6', note: '2026.08.08 당일 응시 후기 · 기억에 따른 출제 주제' },
   r49: { title: '49회 공개 복원 학습 정리', url: 'https://tgog-praise.tistory.com/69', note: '2026.08.03 정리 · 공식 원문 및 정답 검증 자료는 아님' },
   r48a: { title: '48회 데이터에듀 공개 분석 · 1과목', url: 'https://www.dataedupt.kr/sub/community/bbs1view1.php?cate=review&idx=510', note: '응시 기억에 따른 복원 분석' },
@@ -112,17 +116,24 @@ add(48,3,'Ward 연결법','Ward 방식은 계층적 군집에서 어떤 기준�
 add(48,3,'K-means','표준적인 K-means가 최소화하는 목적함수는?', ['각 점과 배정된 군집 중심 사이의 거리 제곱합','서로 다른 군집 중심 간 거리의 합','분류의 p값 합','결측값 개수'], 'K-means는 군집 내 제곱합을 최소화한다. 군집 수를 지정해야 하며 초기값·이상치·변수 척도에 민감할 수 있다.');
 add(48,3,'연관규칙 비교','규칙 A→B와 B→A에서 반드시 같은 지표는?', ['지지도와 향상도','신뢰도만','신뢰도와 민감도','모든 지표가 항상 같음'], '지지도=P(A∩B), 향상도=P(A∩B)/(P(A)P(B))는 대칭이다. 신뢰도는 각각 P(B|A), P(A|B)이므로 일반적으로 다르다.');
 
-export const QUESTIONS = rows.map((q,i) => {
+const RECENT_QUESTIONS = rows.map((q,i) => {
   // 보기 위치를 순환시켜 정답 위치의 편향을 방지합니다.
   const shift = (i * 3 + Math.floor(i/4)) % 4;
   const options = q.options.map((_,j) => q.options[(j + shift) % 4]);
   return { ...q, id: `r${q.round}-${String(i+1).padStart(3,'0')}`, options, answer: (4-shift)%4, source: q.round===48 ? `r48${['a','b','c'][q.subject-1]}` : `r${q.round}`, kind: q.round===49?'복원 정리 기반 재구성':'후기 기반 재구성' };
 });
+// 기존 100문항의 ID와 선택지 순서를 보존해 풀이·북마크 기록을 유지한다.
+const ADDED_QUESTIONS = [...ROUND_QUESTIONS_40_43,...ROUND_QUESTIONS_44_47].map((q,i)=>{
+  const shift=(i*3+q.round)%4;
+  return {...q,options:q.options.map((_,j)=>q.options[(j+shift)%4]),answer:(q.answer-shift+4)%4,kind:'공개 복원 분석 기반 재구성',given:q.given??''};
+});
+export const QUESTIONS = [...RECENT_QUESTIONS,...ADDED_QUESTIONS];
 export const SUBJECTS = ['데이터 이해','데이터 분석 기획','데이터 분석'];
 export const ROUNDS = [
   { number:50, date:'2026.08.08', description:'가장 최근 출제 후기', badge:'LATEST' },
   { number:49, date:'2026.05.17', description:'공개 복원 학습 정리', badge:'' },
   { number:48, date:'2026.02.07', description:'교육업체 공개 복원 분석', badge:'' },
+  ...[...ROUND_META_40_43,...ROUND_META_44_47].map(r=>({...r,number:r.round,date:r.date.replaceAll('-','.'),description:'교육업체 공개 복원 분석',badge:''})).sort((a,b)=>b.number-a.number),
 ];
 export const CONCEPTS = [
   ['DIKW & 지식 전환',1,'데이터 → 정보 → 지식 → 지혜\n공통화: 암묵지 → 암묵지\n외재화: 암묵지 → 형식지\n연결화: 형식지 → 형식지\n내재화: 형식지 → 암묵지'],
